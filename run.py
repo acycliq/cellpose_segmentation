@@ -18,10 +18,10 @@ logging.basicConfig(
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 # folder keeping the frames of the 3D dapi as jpgs
-FRAMES_JPG_DIR = os.path.join(ROOT_DIR, '_Dimitris_folder', 'my_data_rescaled', 'frames', 'jpg')
+FRAMES_JPG_DIR = os.path.join(ROOT_DIR, 'my_data_rescaled', 'frames', 'jpg')
 
 # We draw the cell boundaries on each of the jpgs. Keep here (new) jpgs with the segmentations
-BOUNDARIES_JPG_DIR = os.path.join(ROOT_DIR, '_Dimitris_folder', 'my_data_rescaled', 'out', 'boundaries')
+BOUNDARIES_JPG_DIR = os.path.join(ROOT_DIR, 'my_data_rescaled', 'out', 'boundaries')
 
 use_GPU = models.use_gpu()
 print('>>> GPU activated? %d'%use_GPU)
@@ -120,7 +120,7 @@ def segment(img_3D):
                                              anisotropy = cellpose_ini['anisotropy'],
                                              do_3D=True)
     np.savez('masks_rescaled_anisotropy_1.0.npz', masks)
-    print('Done!')
+    logger.info('Masks saved to disk!')
     return masks
 
 
@@ -132,6 +132,6 @@ def main(img_path):
 
 
 if __name__ == "__main__":
-    img_path = r"_Dimitris_folder/my_data_rescaled/3D_dapi/dapi_image_rescaled_zxyc.tif"
+    img_path = r"my_data_rescaled/3D_dapi/dapi_image_rescaled_zxyc.tif"
     main(img_path)
-    logger.info('ok')
+    logger.info('ok, all done')

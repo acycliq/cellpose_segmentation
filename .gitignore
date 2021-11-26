@@ -1,2 +1,4 @@
 .idea
 my_data_rescaled/3D_dapi
+my_data_rescaled/out/boundaries/*.jpg
+*.npz
