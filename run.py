@@ -25,6 +25,8 @@ BOUNDARIES_JPG_DIR = os.path.join(ROOT_DIR, 'data', 'out', 'boundaries')
 
 use_GPU = models.use_gpu()
 print('>>> GPU activated? %d'%use_GPU)
+print(os.system('nvcc --version'))
+print(os.system('nvidia-smi'))
 torch.cuda.empty_cache()
 
 cellpose_ini = {
