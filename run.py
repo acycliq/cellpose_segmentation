@@ -16,13 +16,14 @@ logging.basicConfig(
     format="%(asctime)s:%(levelname)s:%(message)s"
 )
 
-ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
+# ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
+ROOT_DIR = r"D:\Home\Dimitris\OneDrive - University College London\Data\Izzie\210514 ATPase + Cadherin antibody test - 1-100 -secondary\downscaled"
 
 # folder keeping the frames of the 3D dapi as jpgs
-FRAMES_JPG_DIR = os.path.join(ROOT_DIR, 'data', 'frames', 'jpg')
+FRAMES_JPG_DIR = os.path.join(ROOT_DIR, 'frames', 'jpg')
 
 # We draw the cell boundaries on each of the jpgs. Keep here (new) jpgs with the segmentations
-BOUNDARIES_JPG_DIR = os.path.join(ROOT_DIR, 'data', 'out', 'boundaries')
+BOUNDARIES_JPG_DIR = os.path.join(ROOT_DIR, 'out', 'boundaries')
 
 # use_GPU = models.use_gpu()
 # print('>>> GPU activated? %d'%use_GPU)
@@ -31,12 +32,13 @@ print(os.system('nvidia-smi'))
 torch.cuda.empty_cache()
 
 cellpose_ini = {
-    'channels': [0, 0],
-    'diameter': 7.0,
+    'model_type': 'cyto', # cyto or nuclei
+    'channels': [0, 0], # single channel image
+    'diameter': 18.0,
     'batch_size': 2,
     'anisotropy': 1.0,
-    # 'mask_threshold': 0.0,
-    'flow_threshold': 2.0
+    'mask_threshold': 0,
+    'flow_threshold': 0.4
 }
 
 
@@ -92,11 +94,11 @@ def get_jpg(i):
     retrieves the jpg to draw the boundaries on
     """
     # 1. first check if there is already a jpg
-    jpg_page = os.path.join(BOUNDARIES_JPG_DIR, 'dapi_image_rescaled_%s.jpg' % str(i).zfill(4))
+    jpg_page = os.path.join(BOUNDARIES_JPG_DIR, 'anti ATPase 10x secondary_z%s_c001.jpg' % str(i).zfill(3))
     if os.path.isfile(jpg_page):
         return jpg_page
     else:
-        return os.path.join(FRAMES_JPG_DIR, 'dapi_image_rescaled_%s.jpg' % str(i).zfill(4))
+        return os.path.join(FRAMES_JPG_DIR, 'anti ATPase 10x secondary_z%s_c001.jpg' % str(i).zfill(3))
 
 
 def draw_boundaries(img, masks):
@@ -106,7 +108,7 @@ def draw_boundaries(img, masks):
         boundaries = extract_borders_dip(mask.astype(np.uint32), offset_x, offset_y, [0])
         boundaries['colour'] = utils.get_colour(boundaries.label.values)
         polys = boundaries.coords.values
-        jpg_filename = get_jpg(i)
+        jpg_filename = get_jpg(i+1)
         if len(polys) > 0:
             res = draw_poly(polys, boundaries['colour'].values, jpg_filename)
             jpg_page = os.path.join(BOUNDARIES_JPG_DIR, os.path.basename(jpg_filename))
@@ -116,15 +118,15 @@ def draw_boundaries(img, masks):
 
 def segment(img_3D, use_stiching=False):
     # DEFINE CELLPOSE MODEL
-    model = models.Cellpose(gpu=True, model_type='nuclei')
+    model = models.Cellpose(gpu=True, model_type=cellpose_ini['model_type'])
 
     if use_stiching:
         masks, flows, styles, _ = model.eval(img_3D,
                                              channels=cellpose_ini['channels'],
                                              batch_size=cellpose_ini['batch_size'],
-                                             diameter=cellpose_ini['diameter'],
+                                             # diameter=cellpose_ini['diameter'],
                                              do_3D=False,
-                                             # mask_threshold=cellpose_ini['mask_threshold'],
+                                             mask_threshold=cellpose_ini['mask_threshold'],
                                              flow_threshold=cellpose_ini['flow_threshold'],
                                              stitch_threshold=0.5)
         np.savez('masks_2D_stiched.npz', masks)
@@ -162,13 +164,15 @@ def remove_pages(img, ids):
 
 def main(img_path, use_stiching=False):
     # For multi - channel, multi-Z tiff's, the expected format is Z x channels x Ly x Lx.
-    _img = skimage.io.imread(img_path).transpose([0, 3, 1, 2])
+    _img = skimage.io.imread(img_path)
+    _img = _img[:, :1, :, :] # keep only the first channel, the red one should be ignore in this case
     img = reshape_img(_img)
     masks = segment(img, use_stiching)
     draw_boundaries(img, masks)
 
 
 if __name__ == "__main__":
-    img_path = r"data/3D_dapi/dapi_image_rescaled_zxyc.tif"
+    # img_path = r"data/3D_dapi/dapi_image_rescaled_zxyc.tif"
+    img_path = os.path.join(ROOT_DIR, "anti ATPase 10x secondary.tif")
     main(img_path, use_stiching=True)
     logger.info('ok, all done')
