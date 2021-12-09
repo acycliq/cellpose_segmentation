@@ -35,15 +35,10 @@ cellpose_ini = {
     'diameter': 7.0,
     'batch_size': 2,
     'anisotropy': 1.0,
-    'mask_threshold': 0.0,
-    # 'flow_threshold': 4.0
+    # 'mask_threshold': 0.0,
+    'flow_threshold': 2.0
 }
 
-# remove the first three pages from the stacked image
-# because they do not have any cells (only backrgound)
-# ans that causes cellpose to crash when it tries to
-# stitch the masks
-empty_pages = [0, 1, 2]
 
 def extract_borders_dip(label_image, offset_x=0, offset_y=0, ignore_labels=[0]):
     """
@@ -111,8 +106,7 @@ def draw_boundaries(img, masks):
         boundaries = extract_borders_dip(mask.astype(np.uint32), offset_x, offset_y, [0])
         boundaries['colour'] = utils.get_colour(boundaries.label.values)
         polys = boundaries.coords.values
-        k = len(empty_pages)
-        jpg_filename = get_jpg(i+k)
+        jpg_filename = get_jpg(i)
         if len(polys) > 0:
             res = draw_poly(polys, boundaries['colour'].values, jpg_filename)
             jpg_page = os.path.join(BOUNDARIES_JPG_DIR, os.path.basename(jpg_filename))
@@ -131,7 +125,7 @@ def segment(img_3D, use_stiching=False):
                                              diameter=cellpose_ini['diameter'],
                                              do_3D=False,
                                              # mask_threshold=cellpose_ini['mask_threshold'],
-                                             # flow_threshold=cellpose_ini['flow_threshold'],
+                                             flow_threshold=cellpose_ini['flow_threshold'],
                                              stitch_threshold=0.5)
         np.savez('masks_2D_stiched.npz', masks)
     else:
