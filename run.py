@@ -164,7 +164,6 @@ def main(img_path, use_stiching=False):
     # For multi - channel, multi-Z tiff's, the expected format is Z x channels x Ly x Lx.
     _img = skimage.io.imread(img_path).transpose([0, 3, 1, 2])
     img = reshape_img(_img)
-    # img = remove_pages(img, empty_pages)
     masks = segment(img, use_stiching)
     draw_boundaries(img, masks)
 
