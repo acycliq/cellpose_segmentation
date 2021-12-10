@@ -16,7 +16,7 @@
   </tr>
   <tr>
     <td>3D</td>
-    <td>YES</td>
+    <td><a href="https://www.dropbox.com/s/ep8a53hi03bxcd5/cellpose_segmentation.mp4?dl=0">YES</a></td>
     <td><a href="https://www.dropbox.com/s/sar0imzpexk5lli/boundaries_3D%20and%20mask%3D-4.0.mp4?dl=0">YES</a></td>
     <td><a href="https://www.dropbox.com/s/pfk6wupz4lf9ipz/boundaries_3D_mask%3D-4.0.mp4?dl=0">YES</a></td>
   </tr>
