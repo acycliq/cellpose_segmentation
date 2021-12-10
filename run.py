@@ -20,10 +20,10 @@ logging.basicConfig(
 ROOT_DIR = r"D:\Home\Dimitris\OneDrive - University College London\Data\Izzie\210514 ATPase + Cadherin antibody test - 1-100 -secondary\downscaled"
 
 # folder keeping the frames of the 3D dapi as jpgs
-FRAMES_JPG_DIR = os.path.join(ROOT_DIR, 'anti cadherin', 'frames', 'jpg')
+FRAMES_JPG_DIR = os.path.join(ROOT_DIR, 'anti ATPase 10x secondary', 'frames', 'jpg')
 
 # We draw the cell boundaries on each of the jpgs. Keep here (new) jpgs with the segmentations
-BOUNDARIES_JPG_DIR = os.path.join(ROOT_DIR,  'anti cadherin', 'out', 'boundaries')
+BOUNDARIES_JPG_DIR = os.path.join(ROOT_DIR,  'anti ATPase 10x secondary', 'out', 'boundaries')
 
 # use_GPU = models.use_gpu()
 # print('>>> GPU activated? %d'%use_GPU)
@@ -37,8 +37,8 @@ cellpose_ini = {
     'diameter': 18.0,
     'batch_size': 2,
     'anisotropy': 1.0,
-    'mask_threshold': 0.0,
-    'flow_threshold': 0.4
+    'mask_threshold': -4.0,
+    'flow_threshold': 2.0
 }
 
 
@@ -94,11 +94,11 @@ def get_jpg(i):
     retrieves the jpg to draw the boundaries on
     """
     # 1. first check if there is already a jpg
-    jpg_page = os.path.join(BOUNDARIES_JPG_DIR, 'anti cadherin_z%s_c001.jpg' % str(i).zfill(3))
+    jpg_page = os.path.join(BOUNDARIES_JPG_DIR, 'anti ATPase 10x secondary_z%s_c001.jpg' % str(i).zfill(3))
     if os.path.isfile(jpg_page):
         return jpg_page
     else:
-        return os.path.join(FRAMES_JPG_DIR, 'anti cadherin_z%s_c001.jpg' % str(i).zfill(3))
+        return os.path.join(FRAMES_JPG_DIR, 'anti ATPase 10x secondary_z%s_c001.jpg' % str(i).zfill(3))
 
 
 def draw_boundaries(img, masks):
@@ -135,7 +135,9 @@ def segment(img_3D, use_stiching=False):
                                                  channels=cellpose_ini['channels'],
                                                  batch_size=cellpose_ini['batch_size'],
                                                  diameter=cellpose_ini['diameter'],
-                                                 anisotropy=cellpose_ini['anisotropy'],
+                                                 # anisotropy=cellpose_ini['anisotropy'],
+                                                 # mask_threshold=cellpose_ini['mask_threshold'],
+                                                 min_size=9.0,
                                                  do_3D=True)
 
         np.savez('masks_rescaled_anisotropy_1.0.npz', masks)
@@ -173,6 +175,6 @@ def main(img_path, use_stiching=False):
 
 if __name__ == "__main__":
     # img_path = r"data/3D_dapi/dapi_image_rescaled_zxyc.tif"
-    img_path = os.path.join(ROOT_DIR, "anti cadherin", "anti cadherin.tif")
-    main(img_path, use_stiching=True)
+    img_path = os.path.join(ROOT_DIR, "anti ATPase 10x secondary", "anti ATPase 10x secondary.tif")
+    main(img_path, use_stiching=False)
     logger.info('ok, all done')
