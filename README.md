@@ -22,7 +22,7 @@
   </tr>
     <tr>
     <td>2D + z-stitching</td>
-    <td><a href="https://www.dropbox.com/s/j9m1nnk5y0g3j92/cellpose_segmenttion.mp4?dl=0">YES</a></td>
+    <td><a href="https://www.dropbox.com/s/j9m1nnk5y0g3j92/dapi.mp4?dl=0">YES</a></td>
     <td>YES</td>
     <td>YES</td>
   </tr>
